@@ -5,26 +5,52 @@ public class KSum {
     public static void main(String[] args) {
         int [] X = StdIn.readAllInts();
         int k = Integer.parseInt(args[0]);
-        Stopwatch timer = new Stopwatch();
         Arrays.sort(X);
+
+        Stopwatch timer = new Stopwatch();
         findKsum(X, k);
         StdOut.println("elapsed time = " + timer.elapsedTime());
     }
 
     public static void findKsum(int [] X, int k) {
-        findKsum(X, 0, k, 0, 0);
+        findKsum(X, k, 0, 0, 0, 0);
         System.out.println(COUNTER);
     }
 
-    public static void findKsum(int [] X, int pointer, int k, int sum, int added) {
-        if (pointer == X.length) {
-            if (sum == 0 && added == k) COUNTER += 1;
+    public static void findKsum(int [] X, int k, int lowerPointer, int curr, int target, int added) {
+        if (added == k && target == 0) {
+            COUNTER++;
             return;
         }
 
-        int value = X[pointer];
+        if (lowerPointer == X.length || added >= k || target < 0) return;
 
-        findKsum(X, pointer + 1, k, sum + value, added + 1);
-        findKsum(X, pointer + 1, k, sum, added);
+        if (lowerPointer == X.length) {
+            if (target == 0 && added == k) COUNTER += 1;
+            return;
+        }
+
+        int upperBound = searchMax((k - added) * target, X, lowerPointer, X.length - 1);
+        if (X[upperBound] > (k - added) * target) return;
+
+        int newCurr = X[lowerPointer];
+        int newTarget = target - newCurr;
+
+        findKsum(X, k, lowerPointer + 1, newCurr, newTarget, added + 1);
+        findKsum(X, k, lowerPointer + 1, curr, target, added);
     }
+
+    /// Lembrar de referenciar
+    public static int searchMax(int key, int[] a, int lo, int hi) {
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1) / 2;
+            if (a[mid] > key) {
+                hi = mid - 1;
+            } else {
+                lo = mid;
+            }
+        }
+        return lo;
+    }
+
 }
