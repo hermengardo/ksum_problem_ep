@@ -17,40 +17,34 @@ public class KSum {
         System.out.println(COUNTER);
     }
 
-    public static void findKsum(int [] X, int k, int lowerPointer, int curr, int target, int added) {
-        if (added == k && target == 0) {
+    public static void findKsum(int [] X, int k, int lowerPointer, int curr, int target, int size) {
+        if (size == k && target == 0) {
             COUNTER++;
             return;
         }
 
-        if (lowerPointer == X.length || added >= k || target < 0) return;
+        if (lowerPointer == X.length || size >= k || target < 0) return;
 
-        if (lowerPointer == X.length) {
-            if (target == 0 && added == k) COUNTER += 1;
-            return;
-        }
-
-        int upperBound = searchMax((k - added) * target, X, lowerPointer, X.length - 1);
-        if (X[upperBound] > (k - added) * target) return;
+        int upperBound = searchMax((k - size) * target, X, lowerPointer, X.length - 1);
+        if (X[upperBound] > (k - size) * target) return;
 
         int newCurr = X[lowerPointer];
         int newTarget = target - newCurr;
 
-        findKsum(X, k, lowerPointer + 1, newCurr, newTarget, added + 1);
-        findKsum(X, k, lowerPointer + 1, curr, target, added);
+        findKsum(X, k, lowerPointer + 1, newCurr, newTarget, size + 1);
+        findKsum(X, k, lowerPointer + 1, curr, target, size);
     }
 
     /// Lembrar de referenciar
     public static int searchMax(int key, int[] a, int lo, int hi) {
-        while (lo < hi) {
-            int mid = lo + (hi - lo + 1) / 2;
-            if (a[mid] > key) {
-                hi = mid - 1;
-            } else {
-                lo = mid;
-            }
+        if (hi <= lo) {
+            return lo;
         }
-        return lo;
+        int mid = lo + (hi - lo + 1) / 2;
+        int cmp = a[mid] - key;
+        if (cmp > 0)  // key < a[mid]
+            return searchMax(key, a, lo, mid - 1);
+        else          // key >= a[mid]
+            return searchMax(key, a, mid, hi);
     }
-
 }
